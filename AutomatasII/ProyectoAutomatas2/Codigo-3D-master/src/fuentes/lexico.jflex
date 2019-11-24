@@ -8,6 +8,7 @@ import Interfaz.Interfaz_c3d;
 %%
 %{
     //Código de usuario
+public Pintar pin = new Pintar();
 %}
 
 %cup
@@ -36,6 +37,7 @@ DEC     = "--"
 
 MAS     = "+"
 MENOS   = "-"
+OREXP   = "|"
 POR     = "*"
 DIV     = "/"
 POT     = "^"
@@ -66,7 +68,7 @@ ALFABETO = "Alfabeto"
 AUTOMATA = "Automata"
 BOOLEANO = "Booleano"
 CONJUNTO = "Conjunto"
-ESTADO   = "Estado"
+ESTADO   = "Estados"
 EXPRESION= "Expresion"
 FIN      = "Fin"
 FLOTANTE = "Flotante"
@@ -80,7 +82,8 @@ CON      = "Con"
 AFD      = "esAfd"
 AFN      = "esAfn"
 EINICIAL = "estadoInicial"
-EFINAL   = "estadoFinal"
+EFINAL   = "estadosFinales"
+TRANSICION = "transicion"
 HACIA    = "Hacia"
 ER       = "ExpReg"
 MTABLA   = "mostrarTabla"
@@ -106,8 +109,9 @@ DEFECTO  = "defecto"
 
 ENTERO  = [0-9]+
 DECIMAL = [0-9]+[.][0-9]+     
-ID      = [A-Za-zñÑ][_0-9A-Za-zñÑ]*
-ELEMENTO= [A-Za-zñÑ]
+ID      = [a-z]+[_0-9A-Za-z]*
+ELEMENTO = [A-Za-z]
+ELEMENTOESTADO = [a-zA-Z][0-9]+
 SPACE   = [\ \r\t\f\t]
 ENTER   = [\ \n]
 
@@ -124,7 +128,7 @@ ENTER   = [\ \n]
 <YYINITIAL> {FIN }         { return new Symbol(sym.FIN, yyline, yycolumn,yytext());}
 <YYINITIAL> {FLOTANTE}     { return new Symbol(sym.FLOTANTE, yyline, yycolumn,yytext());}
 <YYINITIAL> {GRAFICO}      { return new Symbol(sym.GRAFICO, yyline, yycolumn,yytext());}
-<YYINITIAL> {INI}       { return new Symbol(sym.INI, yyline, yycolumn,yytext());}
+<YYINITIAL> {INI}          { pin.pintaAzul(yychar,yylength()); return new Symbol(sym.INI, yyline, yycolumn,yytext());}
 <YYINITIAL> {MOSTRAR}      { return new Symbol(sym.MOSTRAR, yyline, yycolumn,yytext());}
 <YYINITIAL> {NUEVO}        { return new Symbol(sym.NUEVO, yyline, yycolumn,yytext());}
 <YYINITIAL> {FUNCION}      { return new Symbol(sym.FUNCION, yyline, yycolumn,yytext());}
@@ -134,6 +138,7 @@ ENTER   = [\ \n]
 <YYINITIAL> {AFN}          { return new Symbol(sym.AFN, yyline, yycolumn,yytext());}
 <YYINITIAL> {EINICIAL}     { return new Symbol(sym.EINICIAL, yyline, yycolumn,yytext());}
 <YYINITIAL> {EFINAL}       { return new Symbol(sym.EFINAL, yyline, yycolumn,yytext());}
+<YYINITIAL> {TRANSICION}       { return new Symbol(sym.TRANSICION, yyline, yycolumn,yytext());}
 <YYINITIAL> {HACIA}        { return new Symbol(sym.HACIA, yyline, yycolumn,yytext());}
 <YYINITIAL> {ER}           { return new Symbol(sym.ER, yyline, yycolumn,yytext());}
 <YYINITIAL> {MTABLA}       { return new Symbol(sym.MTABLA, yyline, yycolumn,yytext());}
@@ -188,6 +193,7 @@ ENTER   = [\ \n]
 //expresion
 
 <YYINITIAL> {MAS}    { return new Symbol(sym.MAS, yyline, yycolumn,yytext());}
+<YYINITIAL> {OREXP}    { return new Symbol(sym.OREXP, yyline, yycolumn,yytext());}
 <YYINITIAL> {MENOS}    { return new Symbol(sym.MENOS, yyline, yycolumn,yytext());}
 <YYINITIAL> {POR}    { return new Symbol(sym.POR, yyline, yycolumn,yytext());}
 <YYINITIAL> {DIV}    { return new Symbol(sym.DIV, yyline, yycolumn,yytext());}
@@ -196,6 +202,10 @@ ENTER   = [\ \n]
 
 <YYINITIAL> {ENTERO}    { return new Symbol(sym.ENTERO, yyline, yycolumn,yytext());}
 <YYINITIAL> {DECIMAL}   { return new Symbol(sym.DECIMAL, yyline, yycolumn,yytext());}
+//Agregue ESTA
+<YYINITIAL> {ELEMENTO}   { return new Symbol(sym.ELEMENTO, yyline, yycolumn,yytext());} 
+<YYINITIAL> {ELEMENTOESTADO}   { return new Symbol(sym.ELEMENTOESTADO, yyline, yycolumn,yytext());} 
+
 <YYINITIAL> {ID}        {return new Symbol(sym.ID, yyline, yycolumn,yytext());}
 <YYINITIAL> {SPACE}     { /*Espacios en blanco, ignorados*/ }
 <YYINITIAL> {ENTER}     { /*Saltos de linea, ignorados*/}

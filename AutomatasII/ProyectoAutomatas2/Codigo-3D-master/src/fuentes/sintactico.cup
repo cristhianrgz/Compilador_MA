@@ -26,16 +26,16 @@ action code
     Display tmp;
 :}
 
-terminal String ID,ENTERO,DECIMAL,MAS, MENOS, POR, DIV, POT, ALFABETO, AUTOMATA, BOOLEANO, CONJUNTO, ESTADO, EXPRESION, FIN, FLOTANTE, GRAFICO, INI, MOSTRAR, NUEVO, FUNCION, VALIDAR, CON, AFD, AFN, EINICIAL, EFINAL, HACIA, ER, MTABLA, ORDEN, OPRINPAL;
+terminal String ID,ENTERO,DECIMAL,MAS,MENOS, POR, DIV, POT, ALFABETO, AUTOMATA, BOOLEANO, CONJUNTO, ESTADO, EXPRESION, FIN, FLOTANTE, GRAFICO, INI, MOSTRAR, NUEVO, FUNCION, VALIDAR, CON, AFD, AFN, EINICIAL, EFINAL, TRANSICION, HACIA, ER, MTABLA, ORDEN, OPRINPAL;
 terminal String ABOVE,BELOW,ABOVEE,BELOWE,EQUAL,NEQUAL;
 terminal String OR,AND,XOR,NOT,NAND, INC, DEC; 
-terminal INT1,CHAR1, PAR_A, PAR_C, LLAV_A, LLAV_C, COMA, PYCOMA, DPUNTO, ASIG;
+terminal INT1,CHAR1, PAR_A, PAR_C, LLAV_A, LLAV_C, COMA, PYCOMA, DPUNTO, ASIG, ELEMENTO, ELEMENTOESTADO, ENTER;
 terminal MIENTRAS, HASTA, REPETIR, HACER, SI, SINO, SELEC, CASO, DEFECTO, PARA, DETENER, CONTINUA;
 
 
-nonterminal String EXP,OP_REL, OPER, VAL;
-nonterminal  INICIO,SENTENCIAS, TIPO, S, L,DECLARA, ASIGNA, WHILE, DO_WHILE, FOR, IF, ELSE, SELECT, CASOS, C, DEF, REPEAT;
-nonterminal Atributo_C3D LOG,REL;
+non terminal String EXP,OP_REL, OPER, VAL;
+non terminal  INICIO,SENTENCIAS, ELEMENTOS, ELEMENTOSESTADOS, ELEMENTOSTRANSICION, MOSTRARGRAFICO, MOSTRARTABLA,IMPLEFUNCION, IMPLEOPRINCIPAL, SENESPECIALES, DEFEXPRESION, METODOS, TIPO, S, L,DECLARA, ASIGNA, WHILE, DO_WHILE,  DECESTADOS, DECALFABETO, DECESTADOI, DECESTADOSFIN, DECTRANSICIONES, FOR, IF, ELSE, SELECT, CASOS, C, DEF, REPEAT;
+non terminal Atributo_C3D LOG,REL;
 
 
 //agregamos la precedencia
@@ -58,7 +58,7 @@ INICIO ::= INI PYCOMA SENTENCIAS FIN PYCOMA
             :}
 ;
 
-SENTENCIAS ::= SENTENCIAS S
+SENTENCIAS ::= S SENTENCIAS 
     |S
 ;
 
@@ -68,6 +68,42 @@ S ::= LOG:log
                 //Interfaz_c3d.notificar(" ");
             :} 
     | DECLARA
+            {:
+                //Interfaz_c3d.notificar(" ");
+            :}
+    | DECESTADOS
+            {:
+                //Interfaz_c3d.notificar(" ");
+            :}
+    | DECALFABETO
+            {:
+                //Interfaz_c3d.notificar(" ");
+            :}
+    | DECESTADOI
+            {:
+                //Interfaz_c3d.notificar(" ");
+            :}
+    | DECESTADOSFIN
+            {:
+                //Interfaz_c3d.notificar(" ");
+            :}
+    | DECTRANSICIONES
+            {:
+                //Interfaz_c3d.notificar(" ");
+            :}
+    | MOSTRARGRAFICO
+            {:
+                //Interfaz_c3d.notificar(" ");
+            :}
+    | MOSTRARTABLA
+            {:
+                //Interfaz_c3d.notificar(" ");
+            :}
+    | IMPLEFUNCION
+            {:
+                //Interfaz_c3d.notificar(" ");
+            :}
+    | IMPLEOPRINCIPAL
             {:
                 //Interfaz_c3d.notificar(" ");
             :}
@@ -460,11 +496,11 @@ ASIGNA ::= ID:id ASIG  EXP:exp PYCOMA
             :}
 ;
 
-DECLARA ::= TIPO L PYCOMA 
+DECLARA ::= TIPO ID PYCOMA 
             {:
                 Interfaz_c3d.notificar("Reserva espacio y almacena el id de las variables.");
             :}
-        | TIPO L ASIG EXP:exp PYCOMA
+        | TIPO ID ASIG EXP:exp PYCOMA
             {:
                 Interfaz_c3d.notificar("Asigna "+exp+" a cada varibale declarada.");
             :}
@@ -473,15 +509,57 @@ DECLARA ::= TIPO L PYCOMA
 
 TIPO ::= INT1
     |   CHAR1
-    |   ALFABETO
     |   BOOLEANO
-    |   CONJUNTO
-    |   ESTADO
-    |   EINICIAL
-    |   EFINAL
 ;
 
-L::= L COMA ID
-    | ID
+
+DECALFABETO::= ALFABETO ID ASIG PAR_A ELEMENTOS PAR_C PYCOMA
 ;
+
+ELEMENTOS::= ELEMENTO COMA ELEMENTOS | ELEMENTO
+;
+
+DECESTADOS::= ESTADO ASIG PAR_A ELEMENTOSESTADOS PAR_C PYCOMA
+;
+
+DECESTADOI::= EINICIAL ASIG ELEMENTOESTADO PYCOMA
+;
+
+DECESTADOSFIN::= EFINAL ASIG PAR_A ELEMENTOSESTADOS PAR_C PYCOMA
+;
+
+DECTRANSICIONES::= TRANSICION ASIG PAR_A ELEMENTOSTRANSICION PAR_C PYCOMA
+;
+
+ELEMENTOSESTADOS::= ELEMENTOESTADO COMA ELEMENTOSESTADOS | ELEMENTOESTADO
+;
+
+ELEMENTOSTRANSICION::= ELEMENTOESTADO COMA ELEMENTO COMA ELEMENTOESTADO | LLAV_A ELEMENTOSESTADOS LLAV_C COMA ELEMENTO COMA ELEMENTOESTADO
+                      | ELEMENTOESTADO COMA ELEMENTO COMA LLAV_A ELEMENTOSESTADOS LLAV_C
+                      | LLAV_A ELEMENTOSESTADOS LLAV_C COMA ELEMENTO COMA LLAV_A ELEMENTOSESTADOS LLAV_C
+;
+
+IMPLEFUNCION::= FUNCION AUTOMATA ID PAR_A PAR_C LLAV_A SENTENCIAS LLAV_C 
+                | FUNCION ER ID PAR_A PAR_C LLAV_A SENESPECIALES LLAV_C 
+;
+
+SENESPECIALES::= DECALFABETO ENTER EXPRESION ID ASIG PAR_A DEFEXPRESION PAR_C PYCOMA
+;
+
+DEFEXPRESION::= 
+;
+
+MOSTRARGRAFICO::= GRAFICO PAR_A ID PAR_C PYCOMA
+;
+
+MOSTRARTABLA::= MTABLA PAR_A ID PAR_C PYCOMA
+;
+
+IMPLEOPRINCIPAL::= OPRINPAL LLAV_A METODOS LLAV_C
+;
+
+METODOS::= ID PAR_A PAR_C PYCOMA ENTER METODOS | ID PAR_A PAR_C PYCOMA
+;
+
+
 

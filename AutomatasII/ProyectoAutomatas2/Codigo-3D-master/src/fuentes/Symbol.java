@@ -36,6 +36,7 @@ public enum Symbol {
     P_coma,
     coma,
     Identificador,
+    ID,
     Numero,
     ERROR,
     alfabeto,      

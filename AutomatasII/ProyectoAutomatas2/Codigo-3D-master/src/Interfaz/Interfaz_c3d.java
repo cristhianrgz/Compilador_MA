@@ -20,11 +20,20 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import static java.lang.System.in;
+import static java.nio.file.Files.lines;
+import static java.nio.file.Files.lines;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import java.awt.Color;
+import javax.swing.JTextPane;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 import static javax.swing.JOptionPane.showMessageDialog;
 
 import javax.swing.JPanel;
@@ -68,6 +77,8 @@ public class Interfaz_c3d extends javax.swing.JFrame {
     JFileChooser seleccionar = new JFileChooser();
     FileOutputStream salida;
     FileInputStream entradaArch;
+    public StyleContext sc;
+    public DefaultStyledDocument doc;
     
     File archivo;
     public Interfaz_c3d() {
@@ -87,6 +98,14 @@ public class Interfaz_c3d extends javax.swing.JFrame {
         tokens.addColumn("Comp_Lexico");
         Font font = new Font("Consolas", Font.PLAIN, 14);
         entrada.setFont(font);
+        
+        //Pintar palabras
+        sc = new StyleContext();
+        doc = new DefaultStyledDocument(sc);
+        scanner Scanp1 =new scanner (in); // aca va el objeto de la clase Scanner que genera el archivo Jflex
+        Scanp1.pin.insertar(entrada.getText());
+        entrada.setDocument(entrada.getDocument());
+
     }
     
     /**
@@ -295,6 +314,25 @@ public class Interfaz_c3d extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 //----
+    //Pintar palabras
+    public void insertar(String texto){
+   
+        entrada.setDocument(doc);
+        try {
+            doc.insertString(0,texto,null);
+
+        }catch (Exception ex) {
+            System.out.println("ERROr: no se pudo establecer estilo de documento");
+        }
+    }
+    //Funciones de colores
+    public void pintaAzul(int posini,int posfin){
+            Style azul = sc.addStyle("ConstantWidth", null);
+            StyleConstants.setForeground(azul, Color.blue);
+            doc.setCharacterAttributes(posini,posfin, azul, false);
+       
+    }
+    
      private void analizarLexico() throws IOException {
          
         int cont = 1;
@@ -497,28 +535,25 @@ public class Interfaz_c3d extends javax.swing.JFrame {
     
 //----
     private void generarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generarActionPerformed
-        errores.setText("");
+         errores.setText("");
         consola.setText("");
-        if(entrada.getText().equals("")){
-            showMessageDialog(null,"No hay código para compilar.","ERROR", JOptionPane.ERROR_MESSAGE);
+        consola.setText("");
+        //agregamo las clases de los analizadores que se crean con jflex y cup
+        String texto = entrada.getText();
+        if(texto.isEmpty()){
+            System.err.println("No es posible evaluar una cadena en blanco.");
+            return;
         }
-        else{
-            //agregamos las clases de los analizadores que se crean con jflex y cup
-            String texto = entrada.getText();
-            if(texto.isEmpty()){
-                System.err.println("No es posible evaluar una cadena en blanco.");
-                return;
-            }
-            try {
-                notificar_er("-----------Analisis iniciado-----------");
-                System.out.println("Inicia la generación de C3D...");
-                scanner scan = new scanner(new BufferedReader( new StringReader(texto)));
-                //  parser parser = new parser(scan);
-                // parser.parse();
-                   notificar_er("----------Analisis finalizado----------");
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+        try {
+            notificar_er("-----------Analisis iniciado-----------");
+            
+            System.out.println("Inicia la generación de C3D...");
+            scanner scan = new scanner(new BufferedReader( new StringReader(texto)));
+            parser parser = new parser(scan);
+            parser.parse();
+            notificar_er("----------Analisis finalizado----------");
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }//GEN-LAST:event_generarActionPerformed
 
@@ -531,10 +566,13 @@ public class Interfaz_c3d extends javax.swing.JFrame {
         else{
            try{
                analizarLexico();
+               Lexer lex = new Lexer(new BufferedReader(new StringReader(entrada.getText())));
+               
            }catch(IOException ex){
               Logger.getLogger(Interfaz_c3d.class.getName()).log(Level.SEVERE, null, ex);
            }
         }
+        
     }//GEN-LAST:event_generar1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed

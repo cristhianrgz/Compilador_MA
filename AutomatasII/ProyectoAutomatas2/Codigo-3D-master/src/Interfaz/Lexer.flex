@@ -8,6 +8,8 @@ D=[0-9]+
 espacio=[ ,\t,\r]+
 %{
     public String lexeme;
+    public Pintar pin=new Pintar();
+
 %}
 %%
 
@@ -48,7 +50,7 @@ espacio=[ ,\t,\r]+
 ( Expresion ) {lexeme=yytext(); return expre;}
 
 /* Palabra resevada inicio */
-( Inicio ) {lexeme=yytext(); return inicio;}
+( Inicio ) {pin.pintaAzul(yychar,yylength()); lexeme=yytext(); return inicio;}
 
 /* Palabra resevada Funcion */
 ( Funcion ) {lexeme=yytext(); return funcion;}
@@ -165,7 +167,7 @@ espacio=[ ,\t,\r]+
 ( "," ) {lexeme=yytext(); return coma;}
 
 /* Identificador */
-{L}({L}|{D})+ {lexeme=yytext(); return Identificador;}
+{L}({L}|{D})* {lexeme=yytext(); return Identificador;}
 
 /* Numero */
 ("(-"{D}+")")|{D}+|[0-9]+[.][0-9]+ {lexeme=yytext(); return Numero;}
